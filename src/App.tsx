@@ -1,5 +1,6 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { RecoilRoot } from "recoil";
 import styled, {
   createGlobalStyle,
   keyframes,
@@ -81,8 +82,10 @@ export default function App() {
     <>
       <ThemeProvider theme={darkTheme}>
         <QueryClientProvider client={queryClient}>
-          <GlobalStyle />
-          <Router />
+          <RecoilRoot>
+            <GlobalStyle />
+            <Router />
+          </RecoilRoot>
         </QueryClientProvider>
       </ThemeProvider>
     </>
