@@ -114,3 +114,13 @@ export default function Main() {
 ```
 ### 이렇게 코드를 짰을 때 불리한점은 useQuery는 API 데이터를 캐시에 저장하여 
 ### 다시 API를 부르지 않아도 바로 렌더링이 가능한데 수정된 코드는 다시 api를 불러오기까지 시간이 걸려 사용자가 화면을 보는데 더 시간이 걸린다.
+
+
+## 오류를만남 (비동기처리)
+
+### navigator.geolocation.getCurrentPosition(OK, NO) 는 비동기함수이다. 여기서 위도 경도를 받아야 API를 부를 수 있는데
+위도 경도를 받은 후 useQuery를 실시하려고 하니 위도 경도가 null로 나온다. 
+
+![image](https://user-images.githubusercontent.com/101778169/196607670-67d4975d-2724-4ff4-8365-9fd9977f5fea.png)
+
+
