@@ -4,7 +4,7 @@ export const isDarkAtom = atom({
   key: "isDark",
   default: [],
 });
-export const Weather: any = atom({
-  key: "allweather",
+export const WeatherRecoil: any = atom({
+  key: "Unique",
   default: [],
 });
