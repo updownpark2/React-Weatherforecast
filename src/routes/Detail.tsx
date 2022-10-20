@@ -37,17 +37,5 @@ const IMG = styled.img`
 `;
 
 export default function Detail() {
-  const { state } = useLocation();
-  console.log(state.dt);
-  console.log(state);
-  const UNIX = new Date(state.dt * 1000);
-  const UNIXRETURN = `${UNIX.getMonth()}월 ${UNIX.getDate()}일 하루 정보`;
-
-  return (
-    <Container>
-      <Header>
-        <Title>{UNIXRETURN}</Title>
-      </Header>
-    </Container>
-  );
+  return <div></div>;
 }

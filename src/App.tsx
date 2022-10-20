@@ -83,7 +83,6 @@ export default function App() {
       <ThemeProvider theme={darktheme}>
         <QueryClientProvider client={queryClient}>
           <RecoilRoot>
-            <GlobalStyle />
             <Router />
           </RecoilRoot>
         </QueryClientProvider>

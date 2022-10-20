@@ -1,46 +1,126 @@
-# Getting Started with Create React App
+# 날씨 웹 사이트를 만들면서 배운점 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Theme 
+styled-component에서 제공하는 기능이다. 테마에 색상을 정리하여 필요할 때 해당 색상을 불러올 수 있다.
+```js
+export default function App() {
+  return (
+    <>
+      <ThemeProvider theme={darkTheme}>
+        <QueryClientProvider client={queryClient}>
+          <RecoilRoot>
+            <GlobalStyle />
+            <Router />
+          </RecoilRoot>
+        </QueryClientProvider>
+      </ThemeProvider>//이런 식으로 ThemeProvider는 GlobalStyle 컴포넌트보다 상위에 위치//하면된다.
+    </>
+  );
+}
+```
 
-## Available Scripts
+## styled.d.ts(declaration file)
+theme용 interface라 생각하면 된다. 테마에 사용되는 색상의 type을 설명한다.
 
-In the project directory, you can run:
+```js
+import "styled-components";
 
-### `npm start`
+// and extend them!
+//이게 타입을 결국 알려주는거
+declare module "styled-components" {
+  export interface DefaultTheme {
+    //여기가 내가 사용할 테마
+    textColor: string;
+    bgcolor: string;
+    accentColor: string;
+  }
+}
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## navigator.geolocation.getCurrentPosition(OK, NO)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+navigator.geolocation.getCurrentPosition는 현재 사용자의 위치를 받아올 수 있는 함수
+두 가지 인자를 받고 성공했을 때 실패했을 때 실행할 함수를 각각인자로 받는다.
 
-### `npm test`
+## usequery()
+ 
+ useQuery를 사용하면서 오류를 만났다.
+ 
+ ![image](https://user-images.githubusercontent.com/101778169/196338777-833d566b-2009-45e9-9385-d8fbd045d78c.png)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+navigator.geolocation.getCurrentPosition(OK, NO)
+에서 OK함수에 useQuery를 넣어 API를 불러오려 했지만 오류가 발생했다.
 
-### `npm run build`
+ useQuery는 콜백함수로서 사용이 불가능 하다!! 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+오류를 발생시켰던 코드 
+```js
+export default function Main() {
+  useEffect(() => navigator.geolocation.getCurrentPosition(OK, NO), []);
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  function OK(position: any) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    const [isLoading,data ]= useQuery()//이렇게 사용이 불가능하다 인자로서 사용이 불가!
+  }
+  function NO() {
+    alert("Can't find you!");
+  }
+  }
+```
 
-### `npm run eject`
+그렇게해서 UseState를 사용해서 API의 데이터를 따로 저장해주었다.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```js
+export default function Main() {
+  useEffect(() => navigator.geolocation.getCurrentPosition(OK, NO), []);
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  const [weather, setWeather] = useState([]);
+  const [load, setLoad] = useState(false);
+  const [time, setTime] = useState([]);
+  console.log(useRecoilValue);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  function OK(position: any) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    Comapi(lat, lng);
+  }
+  function NO() {
+    alert("Can't find you!");
+    
+     async function Comapi(lat: number, lng: number) {
+    const APIKEY = "77f56af5eb08aac7dc417ddf7b1a8ed3";
+    const data = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lng}&appid=${APIKEY}&units=metric`
+    );
+    const json = await (await data.json()).list;
+    const Time = json
+      .map((item: any, index: number) => item.dt)
+      .filter((item: any, index: number) => index % 3 === 0)
+      .map((item: any) => {
+        let What = new Date(item * 1000);
+        return `${
+          What.getMonth() + 1
+        }월 ${What.getDate()}일 ${What.getHours()} : ${What.getMinutes()}`;
+      });
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+    setLoad(true);
+    setWeather(json);
+    setTime(Time);
+  }
+    
+  }
+```
+### 이렇게 코드를 짰을 때 불리한점은 useQuery는 API 데이터를 캐시에 저장하여 
+### 다시 API를 부르지 않아도 바로 렌더링이 가능한데 수정된 코드는 다시 api를 불러오기까지 시간이 걸려 사용자가 화면을 보는데 더 시간이 걸린다.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 오류를만남 (비동기처리)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### navigator.geolocation.getCurrentPosition(OK, NO) 는 비동기함수이다. 여기서 위도 경도를 받아야 API를 부를 수 있는데
+위도 경도를 받은 후 useQuery를 실시하려고 하니 위도 경도가 null로 나온다. 
+
+![image](https://user-images.githubusercontent.com/101778169/196607670-67d4975d-2724-4ff4-8365-9fd9977f5fea.png)
+
+
