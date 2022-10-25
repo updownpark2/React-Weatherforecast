@@ -51,7 +51,6 @@ const Title = styled.h1`
 const Loader = styled.span`
   text-align: center;
 `;
-
 const IMG = styled.img`
   width: 40px;
   height: 40px;
@@ -77,7 +76,7 @@ export default function Detail() {
         <Link to={`/`}>
           <Button>뒤로가기!</Button>
         </Link>{" "}
-        <Title>이 날의 하루 날씨!</Title>
+        <Title>☀️</Title>
       </Header>
 
       <WeatherList>
